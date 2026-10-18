@@ -23,7 +23,14 @@ RESCAN_SECONDS = 5
 
 
 def in_gaming_mode():
-    return subprocess.run(["pgrep", "-x", "gamescope"], capture_output=True).returncode == 0
+    # Gaming Mode runs as this user service; checking it is more reliable than
+    # looking for a gamescope process (gamescope renames its threads).
+    result = subprocess.run(
+        ["systemctl", "--user", "list-units", "--state=active", "--plain",
+         "--no-legend", "gamescope-session-plus@*"],
+        capture_output=True, text=True,
+    )
+    return bool(result.stdout.strip())
 
 
 def switch_to_desktop():
@@ -75,8 +82,11 @@ def main():
                     continue
                 if ev.value == 1:
                     pressed.add(ev.code)
-                    if all(pressed & group for group in COMBO) and in_gaming_mode():
-                        switch_to_desktop()
+                    if all(pressed & group for group in COMBO):
+                        if in_gaming_mode():
+                            switch_to_desktop()
+                        else:
+                            print("Combo pressed, but not in Gaming Mode; ignoring", flush=True)
                 elif ev.value == 0:
                     pressed.discard(ev.code)
 

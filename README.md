@@ -52,6 +52,11 @@ Check it worked: `grep . /sys/bus/usb/devices/*/power/wakeup` and look for
 If nothing wakes the PC, check the BIOS: USB ports must stay powered in sleep
 (on ASRock, ErP should be disabled).
 
+Tested results:
+- Xbox 360 receiver: the controller's Guide button does **not** wake the PC.
+  The receiver's radio appears to shut off while USB is suspended. Pressing the
+  **sync button on the receiver itself** does wake it.
+
 ## desktop-hotkey
 
 Ctrl+Alt+Shift+Delete in Gaming Mode switches to Desktop Mode, so you don't need
